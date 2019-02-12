@@ -1,0 +1,55 @@
+# This file is a blueprint for a cluster start script using the Starter.
+# It assume a standard setup with 3 agents and an equal number of
+# database servers and coordinators.
+#
+# Description:
+#
+#  Used to start an ArangoDB cluster
+#
+#  A universal open-source database with a flexible data model 
+#  for documents, graphs, and key-values. Build high 
+#  performance applications using a convenient sql-like query 
+#  language or JavaScript extensions.
+#
+#  http://www.arangodb.com
+#
+
+[Unit]
+Description=ArangoDB database cluster
+After=sysinit.target sockets.target timers.target paths.target slices.target network.target syslog.target
+
+[Service]
+Type=simple
+WorkingDirectory=/tmp
+
+PermissionsStartOnly=true
+User=arangodb
+Group=arangodb
+
+# system limits
+LimitNOFILE=131072
+LimitNPROC=131072
+TasksMax=131072
+
+# terminate Starter, then kill everything
+KillMode=mixed
+
+# some memory allocator settings
+Environment=GLIBCXX_FORCE_NEW=1
+
+# fix permissions (just in case)
+ExecStartPre=/usr/bin/install -g arangodb -o arangodb -d /var/lib/arangodb3-cluster
+ExecStartPre=/bin/chown -R arangodb:arangodb /var/lib/arangodb3-cluster
+ExecStartPre=/bin/chmod 700 /var/lib/arangodb3-cluster
+
+ExecStart=/usr/libexec/arangodb-cluster.sh
+
+TimeoutStartSec=120
+TimeoutStopSec=60
+
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+
