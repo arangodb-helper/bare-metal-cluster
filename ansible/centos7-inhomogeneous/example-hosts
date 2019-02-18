@@ -1,0 +1,5 @@
+[dc1]
+35.237.32.89  private_ip=10.142.0.12 agent=true  coordinator=false dbserver=true
+34.73.17.205  private_ip=10.142.0.13 agent=true  coordinator=true  dbserver=false
+34.73.27.41   private_ip=10.142.0.14 agent=true  coordinator=false dbserver=false
+34.73.59.148  private_ip=10.142.0.15 agent=false coordinator=true  dbserver=true

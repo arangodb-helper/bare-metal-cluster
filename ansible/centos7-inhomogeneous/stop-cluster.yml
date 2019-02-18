@@ -1,0 +1,12 @@
+---
+- hosts: dc1
+  remote_user: fceller
+  become: yes
+  become_method: sudo
+
+  tasks:
+
+  - name: Restart ArangoDB cluster
+    systemd:
+      state: stopped
+      name: arangodb3-cluster

@@ -1,0 +1,56 @@
+---
+- hosts: dc1
+  remote_user: fceller
+  become: yes
+  become_method: sudo
+
+  vars:
+    - version: 3.4
+    - repository: https://download.arangodb.com/arangodb34/RPM
+
+  tasks:
+
+  - name: Add ArangoDB {{ version }} repository
+    yum_repository:
+      name: arangodb
+      description: ArangoDB {{ version }} repository
+      baseurl: "{{ repository }}"
+      gpgcheck: no
+
+  - name: Install the latest version of ArangoDB {{ version }}
+    yum:
+      name: arangodb3
+      state: latest
+
+  - name: Make sure single server is stopped
+    systemd:
+      name: arangodb3
+      state: stopped
+
+  - name: Install cluster configuration
+    template:
+      src: files/etc/cluster.conf
+      dest: /etc/arangodb3
+      owner: arangodb
+      group: arangodb
+      mode: 0644
+
+  - name: Install starter helper
+    copy:
+      src: files/libexec/arangodb-cluster.sh
+      dest: /usr/libexec
+      owner: arangodb
+      group: arangodb
+      mode: 0755
+
+  - name: Install systemd init-file
+    copy:
+      src: files/systemd/arangodb3-cluster.service
+      dest: /etc/systemd/system
+      owner: root
+      group: root
+      mode: 0644
+
+  - name: just force systemd to reread configs (2.4 and above)
+    systemd:
+      daemon_reload: yes

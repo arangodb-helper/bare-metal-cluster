@@ -1,0 +1,73 @@
+---
+- hosts: dc1
+  remote_user: fceller
+  become: yes
+  become_method: sudo
+
+  tasks:
+
+  - name: Stop ArangoDB cluster
+    systemd:
+      state: stopped
+      name: arangodb3-cluster
+
+  - name: Nuke ArangoDB cluster
+    file:
+      state: absent
+      path: "/var/lib/arangodb3-cluster/"
+
+  - name: cluster data directory
+    file:
+      path: /var/lib/arangodb3-cluster
+      owner: arangodb
+      group: arangodb
+      state: directory
+      mode: 0700
+
+  - name: agency data directory
+    file:
+      path: /var/lib/arangodb3-cluster/agent8531
+      owner: arangodb
+      group: arangodb
+      state: directory
+      mode: 0700
+
+  - name: coordinator data directory
+    file:
+      path: /var/lib/arangodb3-cluster/coordinator8529
+      owner: arangodb
+      group: arangodb
+      state: directory
+      mode: 0700
+
+  - name: dbserver data directory
+    file:
+      path: /var/lib/arangodb3-cluster/dbserver8530
+      owner: arangodb
+      group: arangodb
+      state: directory
+      mode: 0700
+
+  - name: agency data link
+    file:
+      src: /data/agency
+      dest: /var/lib/arangodb3-cluster/agent8531/data
+      owner: arangodb
+      group: arangodb
+      state: link
+
+  - name: coordinator data link
+    file:
+      src: /data/coordinator
+      dest: /var/lib/arangodb3-cluster/coordinator8529/data
+      owner: arangodb
+      group: arangodb
+      state: link
+
+  - name: dbserver data link
+    file:
+      src: /data/dbserver
+      dest: /var/lib/arangodb3-cluster/dbserver8530/data
+      owner: arangodb
+      group: arangodb
+      state: link
