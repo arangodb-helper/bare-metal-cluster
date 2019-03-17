@@ -1,0 +1,15 @@
+---
+- hosts: dc1
+  remote_user: fceller
+  become: yes
+  become_method: sudo
+
+  tasks:
+
+  - name: Install cluster configuration
+    template:
+      src: files/etc/cluster.conf
+      dest: /etc/arangodb3
+      owner: arangodb
+      group: arangodb
+      mode: 0644
